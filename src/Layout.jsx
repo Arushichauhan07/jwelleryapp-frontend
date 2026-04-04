@@ -7,16 +7,12 @@ import Footer from './components/Footer';
 
 const Layout = () => {
     return (
-        <div className='app-layout'>
+        <div >
             <Slider />
-            <div className='bg-[#640d14] top-0'>
-                <Navbar />
-            </div>
-            <div>
-                <ProductDisplay />
-            </div>
+            <Navbar />
 
 
+            <ProductDisplay />
 
             {/* Main Content */}
             <main style={{ padding: "2rem" }}>

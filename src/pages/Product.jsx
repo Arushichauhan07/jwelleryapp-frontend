@@ -70,7 +70,7 @@ const Product = () => {
   return (
     <div>
       {/* Product Details */}
-      <div className="max-w-6xl mx-auto p-6 md:p-12 bg-white rounded-xl shadow-lg mt-10">
+      <div className="mx-auto p-6 md:p-12 bg-white rounded-xl shadow-lg mt-10">
         <div className="flex flex-col md:flex-row gap-10">
           {/* Product Image */}
           <div className="md:w-1/2 flex justify-center items-center">
