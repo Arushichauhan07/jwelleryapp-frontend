@@ -56,7 +56,7 @@ const testimonials = [
 
 const CustomerFeedback = () => {
     const [current, setCurrent] = useState(0);
-    const itemsPerPage = 3;
+     const [itemsPerPage, setItemsPerPage] = useState(3);
 
     // Auto-slide every 3s
     useEffect(() => {
@@ -80,79 +80,111 @@ const CustomerFeedback = () => {
         );
     };
 
-    return (
-        <section className="w-full py-16 px-6 md:px-20 relative">
-            <div className=" mx-auto text-center">
-                {/* Heading */}
-                <div className="relative flex items-center justify-center mb-28">
-                    {/* Line */}
-                    <div className="w-full h-[1.5px] bg-gray-300"></div>
+   
 
-                    {/* Heading */}
-                    <h2 className="absolute bg-white px-6 text-3xl md:text-4xl font-bold text-gray-800">
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth < 768) {
+                setItemsPerPage(1); // Mobile
+            } else {
+                setItemsPerPage(3); // Tablet & Desktop
+            }
+        };
+
+        handleResize(); // Run on initial load
+
+        window.addEventListener("resize", handleResize);
+
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    return (
+        <section className="w-full py-10 sm:py-14 md:py-16 px-4 sm:px-6 md:px-12 lg:px-20">
+            <div className="mx-auto max-w-7xl text-center">
+                {/* Heading */}
+                <div className="relative flex items-center justify-center mb-16 sm:mb-24">
+                    <div className="w-full h-px bg-gray-300"></div>
+
+                    <h2 className="absolute bg-white px-4 sm:px-6 mb-5 text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800">
                         What Our Customers Say
                     </h2>
                 </div>
 
-
                 {/* Carousel */}
                 <div className="relative flex items-center">
-                    {/* Prev Button */}
+                    {/* Previous Button */}
                     <button
                         onClick={handlePrev}
-                        className="absolute -left-6 md:-left-10 bg-black/40 text-white p-2 rounded-full hover:bg-black/60 z-10"
+                        className="absolute left-0 md:-left-5 lg:-left-10 z-10 rounded-full bg-white shadow-lg p-2 sm:p-3 hover:scale-105 transition"
                     >
-                        <GrFormPrevious className="text-[#3E0703] text-2xl"/>
+                        <GrFormPrevious className="text-[#3E0703] text-xl sm:text-2xl" />
                     </button>
 
                     {/* Cards */}
-                    <div className="flex gap-6 justify-center w-full transition-all duration-500">
-                        {testimonials.slice(current, current + itemsPerPage).map((t, i) => (
-                            <div
-                                key={i}
-                                className="relative bg-white shadow-md p-6 border border-[#FFF0C4] hover:shadow-xl transition-all duration-300 text-center rounded-2xl w-80"
-                            >
-                                {/* Image */}
-                                <div className="absolute -top-10 left-1/2 transform -translate-x-1/2">
-                                    <img
-                                        src={t.image}
-                                        alt={t.name}
-                                        className="w-26 h-26 object-cover border-2 border-[#660B05] rounded-full"
-                                    />
-                                </div>
-
-                                {/* Title */}
-                                <h3 className="text-lg font-semibold text-gray-800 mb-2 mt-12">
-                                    {t.title}
-                                </h3>
-
-                                {/* Feedback */}
-                                <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                                    “{t.feedback}”
-                                </p>
-
-                                {/* Stars */}
-                                <div className="flex justify-center mb-3">
-                                    {Array.from({ length: t.rating }).map((_, idx) => (
-                                        <FaStar
-                                            key={idx}
-                                            className="w-5 h-5 fill-yellow-400 text-yellow-400"
+                    <div className="flex justify-center gap-4 md:gap-6 w-full transition-all duration-500">
+                        {testimonials
+                            .slice(current, current + itemsPerPage)
+                            .map((t, i) => (
+                                <div
+                                    key={i}
+                                    className="
+                relative
+                bg-white
+                border border-[#FFF0C4]
+                shadow-md
+                hover:shadow-xl
+                rounded-2xl
+                p-5 sm:p-6
+                pt-14
+                transition-all
+                duration-300
+                w-full
+                max-w-[320px]
+              "
+                                >
+                                    {/* Image */}
+                                    <div className="absolute -top-10 left-1/2 -translate-x-1/2">
+                                        <img
+                                            src={t.image}
+                                            alt={t.name}
+                                            className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border-2 border-[#660B05]"
                                         />
-                                    ))}
-                                </div>
+                                    </div>
 
-                                {/* Name */}
-                                <p className="text-green-600 font-medium">- {t.name}</p>
-                            </div>
-                        ))}
+                                    {/* Title */}
+                                    <h3 className="mt-10 text-lg sm:text-xl font-semibold text-gray-800">
+                                        {t.title}
+                                    </h3>
+
+                                    {/* Feedback */}
+                                    <p className="mt-3 text-sm sm:text-base text-gray-600 leading-relaxed">
+                                        "{t.feedback}"
+                                    </p>
+
+                                    {/* Stars */}
+                                    <div className="flex justify-center mt-4">
+                                        {Array.from({ length: t.rating }).map((_, idx) => (
+                                            <FaStar
+                                                key={idx}
+                                                className="w-4 h-4 sm:w-5 sm:h-5 fill-yellow-400 text-yellow-400"
+                                            />
+                                        ))}
+                                    </div>
+
+                                    {/* Name */}
+                                    <p className="mt-3 text-green-600 font-medium text-sm sm:text-base">
+                                        - {t.name}
+                                    </p>
+                                </div>
+                            ))}
                     </div>
 
                     {/* Next Button */}
                     <button
                         onClick={handleNext}
-                        className="absolute -right-6 md:-right-10 bg-black/40 text-white p-2 rounded-full hover:bg-black/60 z-10"
+                        className="absolute right-0 md:-right-5 lg:-right-10 z-10 rounded-full bg-white shadow-lg p-2 sm:p-3 hover:scale-105 transition"
                     >
-                        <IoChevronForwardSharp className="text-[#3E0703] text-2xl"/>
+                        <IoChevronForwardSharp className="text-[#3E0703] text-xl sm:text-2xl" />
                     </button>
                 </div>
             </div>

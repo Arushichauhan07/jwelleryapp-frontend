@@ -56,7 +56,7 @@ const HeroSectionCarousel = () => {
                 key={i}
                 src={img}
                 alt={`Slide ${i}`}
-                className="w-1/4 h-[60vh] object-cover"
+                className="md:w-1/4 w-full h-[60vh] object-cover"
               />
             ))}
           </div>

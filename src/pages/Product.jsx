@@ -1,19 +1,101 @@
-import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { FaHeart, FaShoppingCart, FaTruck, FaHeadset, FaUndo, FaLock } from "react-icons/fa";
+import axios from "axios";
+import { useUser } from "../dataProvider/useUser.js";
+
+const apiUrl = import.meta.env.VITE_API_URL;
 
 const Product = () => {
-  const location = useLocation();
   const navigate = useNavigate();
-  const { product } = location.state || {};
   const [quantity, setQuantity] = useState(1);
   const [addedToCart, setAddedToCart] = useState(false);
   const [addedToWishlist, setAddedToWishlist] = useState(false);
+  const { id } = useParams();
+  const [product, setProduct] = useState(null)
+  const { data: userData, isLoading, error, refetch  } = useUser();
 
-  if (!product) return <p className="text-center mt-20 text-gray-500">No product data passed!</p>;
+  const [loading, setLoading] = useState(true);
 
-  const handleAddToCart = () => setAddedToCart(true);
-  const handleAddToWishlist = () => setAddedToWishlist(!addedToWishlist);
+  const fetchProductDetails = async (productId) => {
+    try {
+      setLoading(true);
+
+      const response = await axios.get(`${apiUrl}/products/${productId}`);
+
+      if (response.data.success) {
+        setProduct(response.data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching product details:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (id) {
+      fetchProductDetails(id);
+    }
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        Loading...
+      </div>
+    );
+  }
+
+  const token = localStorage.getItem("token")
+
+  const handleAddToCart = async () => {
+    try {
+      const response = await axios.patch(
+        `${apiUrl}/cart/${product._id}`,
+        {
+          quantity,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if(response.data.success) {
+        refetch()
+      }
+
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleAddToWishlist = async () => {
+    try {
+      const response = await axios.patch(
+        `${apiUrl}/wishlist/${product._id}`, null, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if(response.data.success) {
+        refetch()
+      }
+
+      console.log(response.data);
+
+    } catch (error) {
+      console.error(
+        "Error updating wishlist:",
+        error.response?.data || error.message
+      );
+    }
+  };
 
   // Delivery features
   const features = [
@@ -75,7 +157,7 @@ const Product = () => {
           {/* Product Image */}
           <div className="md:w-1/2 flex justify-center items-center">
             <img
-              src={product.img}
+              src={product?.images[0]}
               alt={product.name}
               className="w-full h-full object-cover rounded-xl shadow-md hover:scale-105 transform transition-transform duration-500"
             />
@@ -103,25 +185,23 @@ const Product = () => {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-4 mt-6">
+            <div className="flex flex-col sm:flex-row gap-4 mt-6 w-full">
               <button
                 onClick={handleAddToCart}
                 disabled={addedToCart}
-                className={`flex items-center gap-2 px-6 py-3 bg-[#8C1007] text-white rounded-lg shadow-md hover:bg-[#660B05] transition-all ${
-                  addedToCart ? "opacity-70 cursor-not-allowed" : ""
-                }`}
+                className={`flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3 bg-[#8C1007] text-white rounded-lg shadow-md hover:bg-[#660B05] transition-all ${addedToCart ? "opacity-70 cursor-not-allowed" : ""
+                  }`}
               >
-                <FaShoppingCart />
+                <FaShoppingCart className="text-lg" />
                 {addedToCart ? "Added" : "Add to Cart"}
               </button>
 
               <button
                 onClick={handleAddToWishlist}
-                className={`flex items-center gap-2 px-6 py-3 border rounded-lg hover:bg-gray-100 transition-all ${
-                  addedToWishlist ? "text-red-600" : "text-gray-700"
-                }`}
+                className={`flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3 border rounded-lg hover:bg-gray-100 transition-all ${addedToWishlist ? "text-red-600" : "text-gray-700"
+                  }`}
               >
-                <FaHeart />
+                <FaHeart className="text-lg" />
                 {addedToWishlist ? "Wishlisted" : "Add to Wishlist"}
               </button>
             </div>
@@ -132,7 +212,7 @@ const Product = () => {
                 <strong>Category:</strong> {product.category}
               </p>
               <p>
-                <strong>Added on:</strong> {product.date}
+                <strong>Added on:</strong> {new Date(product.updatedAt).toLocaleDateString()}
               </p>
               <p>
                 <strong>SKU:</strong> #{Math.floor(Math.random() * 100000)}
@@ -190,6 +270,7 @@ const Product = () => {
         </div>
       </div>
     </div>
+
   );
 };
 

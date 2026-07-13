@@ -30,16 +30,30 @@ const ProductDisplay = () => {
   }, [images.length]);
 
   return (
-    <div className="flex flex-wrap gap-6 justify-center items-center p-6 rounded-2xl ">
+    <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-5 md:gap-6 p-4 sm:p-6 rounded-2xl">
       {indexes.map((idx, i) => (
         <div
           key={i}
-          className="h-32 w-32 rounded-full overflow-hidden border-4 border-white shadow-md hover:scale-110 hover:shadow-xl transition-transform duration-300"
+          className="
+        h-20 w-20
+        sm:h-24 sm:w-24
+        md:h-28 md:w-28
+        lg:h-32 lg:w-32
+        rounded-full
+        overflow-hidden
+        border-4 border-white
+        shadow-md
+        hover:scale-110
+        hover:shadow-xl
+        transition-all
+        duration-300
+        flex-shrink-0
+      "
         >
           <img
             src={images[idx]}
             alt={`profile-${i}`}
-            className="h-full w-full object-cover transition-all duration-500"
+            className="h-full w-full object-cover"
           />
         </div>
       ))}
