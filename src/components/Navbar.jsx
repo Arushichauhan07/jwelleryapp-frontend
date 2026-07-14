@@ -7,7 +7,7 @@ import { BsCart3 } from "react-icons/bs";
 import { HiMenu, HiX } from "react-icons/hi";
 import UserProfile from "./UserProfile";
 import { useUser } from "../dataProvider/useUser.js";
-import { useSearch } from "../context/utilisStates.jsx";
+import { useSearch } from "../context/UtilisStates.jsx";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);

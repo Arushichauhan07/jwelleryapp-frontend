@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { FaFilter } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import { useProducts } from "../dataProvider/useUser"
-import { useSearch } from "../context/utilisStates";
+import { useSearch } from "../context/UtilisStates";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
