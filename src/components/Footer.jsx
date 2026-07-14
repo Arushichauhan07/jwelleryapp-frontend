@@ -9,7 +9,7 @@ const Footer = () => {
         
         {/* Brand Section */}
         <div>
-          <h2 className="text-2xl font-bold mb-4">MyStore</h2>
+          <h2 className="text-2xl font-bold mb-4">Aarna Jewels</h2>
           <p className="text-gray-300">
             Discover timeless jewellery pieces crafted with love and elegance.
           </p>
@@ -40,7 +40,7 @@ const Footer = () => {
 
       {/* Bottom Strip */}
       <div className="border-t border-white/20 py-4 text-center text-sm text-gray-300">
-        © {new Date().getFullYear()} MyStore. All rights reserved.
+        © {new Date().getFullYear()} Aarna Jewels. All rights reserved.
       </div>
     </footer>
   );

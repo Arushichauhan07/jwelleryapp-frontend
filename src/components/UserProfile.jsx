@@ -17,12 +17,9 @@ export default function UserProfile({ open, onClose }) {
     // const [userData, setUserData] = useState(null);
     const { data: userData, isLoading, error } = useUser();
 
-    console.log("User data from useUser hook:", userData);
-
     if (isLoading) return <p>Loading...</p>;
 
     if (error) return <p>Something went wrong</p>;
-    console.log(userData);
 
     // const fetchUserProfile = async () => {
     //     try {

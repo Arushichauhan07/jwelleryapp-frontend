@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { FaHeart, FaShoppingCart, FaTruck, FaHeadset, FaUndo, FaLock } from "react-icons/fa";
 import axios from "axios";
 import { useUser } from "../dataProvider/useUser.js";
+import { useProducts } from "../dataProvider/useUser";
+import { toast } from "react-hot-toast";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -11,9 +13,14 @@ const Product = () => {
   const [quantity, setQuantity] = useState(1);
   const [addedToCart, setAddedToCart] = useState(false);
   const [addedToWishlist, setAddedToWishlist] = useState(false);
+  const [position, setPosition] = useState({
+    x: 50,
+    y: 50
+  })
   const { id } = useParams();
   const [product, setProduct] = useState(null)
-  const { data: userData, isLoading, error, refetch  } = useUser();
+  const { data: userData, isLoading, error, refetch } = useUser();
+  const { data: productsData } = useProducts()
 
   const [loading, setLoading] = useState(true);
 
@@ -39,10 +46,28 @@ const Product = () => {
     }
   }, [id]);
 
-  if (loading) {
+  if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        Loading...
+      <div className="col-span-full flex items-center justify-center py-24">
+        <div className="flex flex-col items-center gap-4">
+          {/* Outer Ring */}
+          <div className="relative w-20 h-20">
+            <div className="absolute inset-0 rounded-full border-4 border-[#D4AF37]/30"></div>
+
+            {/* Rotating Gold Ring */}
+            <div className="absolute inset-0 rounded-full border-t-4 border-[#D4AF37] animate-spin"></div>
+
+            {/* Diamond Center */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-8 h-8 rotate-45 bg-gradient-to-br from-[#F8E7A1] to-[#D4AF37] shadow-lg"></div>
+            </div>
+          </div>
+
+          {/* Loading Text */}
+          <p className="text-[#8B6F47] text-lg font-semibold tracking-widest animate-pulse">
+            Loading Collection...
+          </p>
+        </div>
       </div>
     );
   }
@@ -63,11 +88,10 @@ const Product = () => {
         }
       );
 
-      if(response.data.success) {
+      if (response.data.success) {
+        toast.success("Product added to cart")
         refetch()
       }
-
-      console.log(response.data);
     } catch (error) {
       console.log(error);
     }
@@ -77,17 +101,16 @@ const Product = () => {
     try {
       const response = await axios.patch(
         `${apiUrl}/wishlist/${product._id}`, null, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
       );
 
-      if(response.data.success) {
+      if (response.data.success) {
+        toast.success("Product added to wishlist")
         refetch()
       }
-
-      console.log(response.data);
 
     } catch (error) {
       console.error(
@@ -121,55 +144,90 @@ const Product = () => {
     },
   ];
 
-  // Suggested products (mock data, can come from API)
-  const suggestedProducts = [
-    {
-      id: 1,
-      name: "Elegant Bracelet",
-      price: 799,
-      img: "https://i.pinimg.com/1200x/4a/d9/b2/4ad9b2d7c30bc7586463d489690ea37a.jpg",
-    },
-    {
-      id: 2,
-      name: "Golden Earrings",
-      price: 1299,
-      img: "https://i.pinimg.com/736x/2f/43/fd/2f43fd86bab521fe34e5b23b2b293052.jpg",
-    },
-    {
-      id: 3,
-      name: "Trendy Necklace",
-      price: 1599,
-      img: "https://i.pinimg.com/1200x/ec/e8/b0/ece8b08a516f6d44dc22c8e4c1b10eb5.jpg",
-    },
-    {
-      id: 4,
-      name: "Silver Anklet",
-      price: 499,
-      img: "https://i.pinimg.com/1200x/2c/c5/5c/2cc55c8c4aeeda00a60e9bec6db181c1.jpg",
-    },
-  ];
+  // Suggested products 
+  const allProducts =
+    productsData?.flatMap((category) =>
+      category.products.map((product) => ({
+        ...product,
+        category: category._id,
+      }))
+    ) || [];
+
+  const cartProductIds =
+    userData?.cart?.map((item) => item.product._id) || [];
+
+  const filteredProducts = allProducts.filter(
+    (product) => !cartProductIds.includes(product._id)
+  );
+
+  const suggestedProducts = [...filteredProducts]
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 4);
+
+  console.log("suggestedProducts", suggestedProducts)
+
+  // const suggestedProducts = [
+  //   {
+  //     id: 1,
+  //     name: "Elegant Bracelet",
+  //     price: 799,
+  //     img: "https://i.pinimg.com/1200x/4a/d9/b2/4ad9b2d7c30bc7586463d489690ea37a.jpg",
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "Golden Earrings",
+  //     price: 1299,
+  //     img: "https://i.pinimg.com/736x/2f/43/fd/2f43fd86bab521fe34e5b23b2b293052.jpg",
+  //   },
+  //   {
+  //     id: 3,
+  //     name: "Trendy Necklace",
+  //     price: 1599,
+  //     img: "https://i.pinimg.com/1200x/ec/e8/b0/ece8b08a516f6d44dc22c8e4c1b10eb5.jpg",
+  //   },
+  //   {
+  //     id: 4,
+  //     name: "Silver Anklet",
+  //     price: 499,
+  //     img: "https://i.pinimg.com/1200x/2c/c5/5c/2cc55c8c4aeeda00a60e9bec6db181c1.jpg",
+  //   },
+  // ];
 
   return (
     <div>
       {/* Product Details */}
       <div className="mx-auto p-6 md:p-12 bg-white rounded-xl shadow-lg mt-10">
-        <div className="flex flex-col md:flex-row gap-10">
+        <div className="flex flex-col md:flex-row gap-10 md:h-4/6">
           {/* Product Image */}
-          <div className="md:w-1/2 flex justify-center items-center">
+          <div
+            className="md:w-1/2 relative overflow-hidden rounded-xl cursor-zoom-in"
+            onMouseMove={(e) => {
+              const { left, top, width, height } =
+                e.currentTarget.getBoundingClientRect();
+
+              const x = ((e.clientX - left) / width) * 100;
+              const y = ((e.clientY - top) / height) * 100;
+
+              setPosition({ x, y });
+            }}
+          >
             <img
               src={product?.images[0]}
-              alt={product.name}
-              className="w-full h-full object-cover rounded-xl shadow-md hover:scale-105 transform transition-transform duration-500"
+              alt={product?.name}
+              className="w-full h-full transition-transform duration-200 hover:scale-[2.2]"
+              style={{
+                transformOrigin: `${position.x}% ${position.y}%`,
+              }}
             />
           </div>
 
           {/* Product Details */}
           <div className="md:w-1/2 flex flex-col gap-6">
-            <h1 className="text-3xl font-bold text-gray-800">{product.name}</h1>
-            <p className="text-2xl font-bold text-[#660B05]">₹{product.price.toLocaleString()}</p>
+            <h1 className="text-3xl font-bold text-gray-800">{product?.name}</h1>
+            <p className="text-2xl font-bold text-[#660B05]">₹{product?.price.toLocaleString()}</p>
 
             <p className="text-gray-700">
-              This is a premium {product.category} crafted with high-quality materials. Perfect for gifting or daily wear.
+              This is a premium {product?.category} crafted with high-quality materials. Perfect for gifting or daily wear.
             </p>
 
             {/* Quantity Selector */}
@@ -209,13 +267,10 @@ const Product = () => {
             {/* Additional Info */}
             <div className="mt-6 text-gray-600">
               <p>
-                <strong>Category:</strong> {product.category}
+                <strong>Category:</strong> {product?.category}
               </p>
               <p>
-                <strong>Added on:</strong> {new Date(product.updatedAt).toLocaleDateString()}
-              </p>
-              <p>
-                <strong>SKU:</strong> #{Math.floor(Math.random() * 100000)}
+                <strong>Added on:</strong> {new Date(product?.updatedAt).toLocaleDateString()}
               </p>
             </div>
           </div>
@@ -252,15 +307,15 @@ const Product = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
-          {suggestedProducts.map((item) => (
+          {suggestedProducts?.map((item) => (
             <div
               key={item.id}
               className="bg-white shadow-md rounded-lg p-4 hover:shadow-xl transition cursor-pointer"
-              onClick={() => navigate("/product", { state: { product: item } })}
+              onClick={() => navigate(`/product/${item._id}`)}
             >
               <img
-                src={item.img}
-                alt={item.name}
+                src={item?.images[0]}
+                alt={item?.name}
                 className="w-full h-56 object-cover rounded-md mb-4"
               />
               <h3 className="text-lg font-semibold text-gray-800">{item.name}</h3>

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FaFilter } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
+import { useProducts } from "../dataProvider/useUser"
 
 const products = [
   { name: "Elegant Gold Ring", price: 15000, img: "https://i.pinimg.com/736x/21/c1/17/21c117edb0c5eaf9e0247e6c3a0e3630.jpg", category: "Rings", date: "2025-09-01" },
@@ -20,6 +21,7 @@ const NewCollection = () => {
   const [showFilter, setShowFilter] = useState(false);
   const filterRef = useRef();
   const navigate = useNavigate()
+  const { data: productsData, error, isLoading } = useProducts()
 
   // Close the popover if clicked outside
   useEffect(() => {
@@ -38,28 +40,12 @@ const NewCollection = () => {
       ? products
       : products.filter((p) => p.category === selectedCategory);
 
-  // Sort products
-  if (sortBy === "Price: Low to High") filteredProducts = [...filteredProducts].sort((a, b) => a.price - b.price);
-  else if (sortBy === "Price: High to Low") filteredProducts = [...filteredProducts].sort((a, b) => b.price - a.price);
-  else if (sortBy === "Latest") filteredProducts = [...filteredProducts].sort((a, b) => new Date(b.date) - new Date(a.date));
-
   return (
-    <div className="py-16 px-6 md:px-20 bg-gradient-to-b from-white via-pink-50 to-white">
+    <div className="py-4 px-6 md:px-20 bg-gradient-to-b from-white via-pink-50 to-white">
       {/* Heading */}
       <div className="relative flex items-center justify-between mb-10">
-        <h2 className="text-3xl md:text-4xl font-bold text-gray-800">
-          New Arrivals
-        </h2>
-
         {/* Filter Icon */}
         <div className="relative" ref={filterRef}>
-          <button
-            onClick={() => setShowFilter(!showFilter)}
-            className="p-3 rounded-full bg-[#8C1007] text-white hover:bg-[#660B05] transition-all"
-          >
-            <FaFilter size={18} />
-          </button>
-
           {/* Small Popover */}
           {showFilter && (
             <div className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg z-10 p-3">
@@ -72,11 +58,10 @@ const NewCollection = () => {
                       setSortBy(option);
                       setShowFilter(false);
                     }}
-                    className={`text-left px-3 py-2 rounded-md transition-all ${
-                      sortBy === option
-                        ? "bg-[#8C1007] text-white"
-                        : "hover:bg-gray-100"
-                    }`}
+                    className={`text-left px-3 py-2 rounded-md transition-all ${sortBy === option
+                      ? "bg-[#8C1007] text-white"
+                      : "hover:bg-gray-100"
+                      }`}
                   >
                     {option}
                   </button>
@@ -93,11 +78,10 @@ const NewCollection = () => {
           <button
             key={cat}
             onClick={() => setSelectedCategory(cat)}
-            className={`px-4 py-2 rounded-full border transition-all ${
-              selectedCategory === cat
-                ? "bg-[#8C1007] text-white shadow-md"
-                : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
-            }`}
+            className={`px-4 py-2 rounded-full border transition-all ${selectedCategory === cat
+              ? "bg-[#8C1007] text-white shadow-md"
+              : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+              }`}
           >
             {cat}
           </button>
@@ -122,7 +106,9 @@ const NewCollection = () => {
               <div className="p-4 text-center">
                 <h3 className="text-lg font-semibold text-gray-800">{p.name}</h3>
                 <p className="text-[#660B05] font-bold">₹{p.price.toLocaleString()}</p>
-                <button onClick={()=>navigate("/product", { state: {product: p}})} className="mt-3 px-4 py-2 bg-[#660B05] text-white rounded-lg shadow-md hover:bg-[#8B0000] transition-all">
+                <button 
+                // onClick={() => navigate("/products", { state: { product: p } })} 
+                className="mt-3 px-4 py-2 bg-[#660B05] text-white rounded-lg shadow-md hover:bg-[#8B0000] transition-all">
                   View Details
                 </button>
               </div>

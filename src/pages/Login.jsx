@@ -36,7 +36,6 @@ const Login = ({ showPopup, setShowPopup }) => {
 
             const response = await axios.post(endpoint, data);
 
-            console.log("Auth response:", response);
             if (response.data.success) {
                 localStorage.setItem("token", response.data.token);
                 setShowPopup(false);
@@ -72,8 +71,6 @@ const Login = ({ showPopup, setShowPopup }) => {
                 localStorage.setItem("token", response.data.token);
                 setShowPopup(false);
             }
-
-            console.log(response.data);
         } catch (error) {
             console.log(error);
         }

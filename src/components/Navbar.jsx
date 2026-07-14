@@ -19,9 +19,6 @@ const Navbar = () => {
   const location = useLocation()
   const { searchField, setSearchField } = useSearch()
 
-
-  console.log(location.pathname)
-  console.log("searchInputField", searchInputField)
   useEffect(() => {
     if (location.pathname === "/products") {
       setShowSearchbar(true);
@@ -44,9 +41,9 @@ const Navbar = () => {
               {isOpen ? <HiX /> : <HiMenu />}
             </button>
 
-            <Link to="/" className="font-bold text-lg">
+            {/* <Link to="/" className="font-bold text-lg">
               Logo
-            </Link>
+            </Link> */}
           </div>
 
 

@@ -8,12 +8,41 @@ import {
 } from "react-icons/fa";
 import { useUser } from "../dataProvider/useUser.js";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-hot-toast"
 
+const apiUrl = import.meta.env.VITE_API_URL;
 
 const Wishlist = () => {
-    const navigate = useNavigate();
-    const { data: userData, isLoading, error, refetch  } = useUser();
-    const wishlistProducts = userData?.wishlist || [];
+  const navigate = useNavigate();
+  const { data: userData, isLoading, error, refetch } = useUser();
+  const wishlistProducts = userData?.wishlist || [];
+
+  const token = localStorage.getItem("token")
+
+  const handleAddToCart = async (productId) => {
+    try {
+      const response = await axios.patch(
+        `${apiUrl}/cart/${productId}`,
+        {
+          quantity: 1,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        toast.success("Product added to cart")
+        refetch()
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <section className="min-h-screen bg-[#FFF8EF] py-12 px-6 rounded-2xl">
       <div className="max-w-7xl mx-auto">
@@ -21,9 +50,6 @@ const Wishlist = () => {
 
         <div className="flex flex-col md:flex-row justify-between items-center mb-10">
           <div>
-            <h1 className="text-5xl font-bold text-[#6D0F24]">
-              My Wishlist
-            </h1>
 
             <p className="text-gray-600 mt-3">
               {wishlistProducts.length} Items Saved
@@ -40,7 +66,7 @@ const Wishlist = () => {
         {wishlistProducts.length === 0 ? (
           <div className="bg-white rounded-2xl p-16 shadow text-center">
 
-            <Heart
+            <FaHeart
               size={70}
               className="mx-auto text-[#D4AF37]"
             />
@@ -118,8 +144,10 @@ const Wishlist = () => {
 
                     <div className="flex gap-3 mt-6">
 
-                      <button onClick={(e) => {e.stopPropagation()}} className="flex-1 bg-[#6D0F24] hover:bg-[#52091b] text-white py-3 rounded-lg flex justify-center items-center gap-2 transition">
-
+                      <button onClick={(e) => {
+                        e.stopPropagation()
+                        handleAddToCart(product._id)
+                      }} className="flex-1 bg-[#6D0F24] hover:bg-[#52091b] text-white py-3 rounded-lg flex justify-center items-center gap-2 transition">
                         <FaShoppingCart size={18} />
 
                         Cart

@@ -2,8 +2,11 @@ import React from 'react'
 import HeroSectionCarousel from './HeroSectionCarousel'
 import CustomerFeedback from './CustomerFeedback'
 import ShopByBudget from './ShopByBudget'
+import { useNavigate } from 'react-router-dom'
 
 const HeroSection = () => {
+
+    const navigate = useNavigate()
 
     const categories = [
         { name: "Necklace", img: "https://i.pinimg.com/1200x/df/03/bc/df03bcddd6a90e87671bee370c39c123.jpg" },
@@ -29,6 +32,11 @@ const HeroSection = () => {
                         {categories.map((cat, i) => (
                             <div
                                 key={i}
+                                onClick={()=>navigate("/products", {
+                                    state: {
+                                        category:cat.name
+                                    }
+                                })}
                                 className="group relative overflow-hidden rounded-2xl mb-6 cursor-pointer break-inside-avoid"
                             >
                                 <img

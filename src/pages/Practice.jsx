@@ -39,8 +39,6 @@ const Practice = () => {
         });
       }
 
-      console.log("Detected fields:", foundFields);
-
       // create form state
       const initial = {};
       foundFields.forEach((f) => {

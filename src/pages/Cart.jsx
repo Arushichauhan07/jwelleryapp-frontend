@@ -8,8 +8,6 @@ const Cart = () => {
 
   const { data: userData, isLoading, error } = useUser();
 
-  console.log("data", userData)
-
   const subtotal =
     userData?.cart?.reduce(
       (total, item) => total + item.product.price * item.quantity,
