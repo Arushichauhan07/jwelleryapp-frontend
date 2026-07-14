@@ -62,7 +62,7 @@ const Login = ({ showPopup, setShowPopup }) => {
     const handleContinueWithGoogle = async (credentialResponse) => {
         try {
             const response = await axios.post(
-                "http://localhost:5000/api/sign-up",
+                `${apiUrl}/sign-up`,
                 {
                     token: credentialResponse.credential,
                 }
