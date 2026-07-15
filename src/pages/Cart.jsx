@@ -2,11 +2,15 @@ import React from "react";
 import { FiMinus, FiPlus, FiTrash2 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../dataProvider/useUser.js";
+import axios from "axios";
+import { toast } from "react-hot-toast";
+
+const apiUrl = import.meta.env.VITE_API_URL;
 
 const Cart = () => {
   const navigate = useNavigate();
 
-  const { data: userData, isLoading, error } = useUser();
+  const { data: userData, isLoading, error, refetch } = useUser();
 
   const subtotal =
     userData?.cart?.reduce(
@@ -51,6 +55,74 @@ const Cart = () => {
     );
   }
 
+  const token = localStorage.getItem("token")
+
+  const handleAddToCart = async (productId) => {
+    try {
+      const response = await axios.patch(
+        `${apiUrl}/cart/${productId}`,
+        {
+          quantity: 1,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        toast.success("Product added to cart")
+        refetch()
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleRemoveFromCart = async (productId) => {
+    try {
+      const response = await axios.patch(
+        `${apiUrl}/removecartitem/${productId}`,
+        {
+          quantity: 1,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        toast.success("Product added to cart")
+        refetch()
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  
+  const handleRemoveEntireItemFromCart = async (productId) => {
+    try {
+      const response = await axios.patch(
+        `${apiUrl}/removecartitem/${productId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        toast.success("Product added to cart")
+        refetch()
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 py-10 px-4 rounded-2xl">
       <div className="max-w-7xl mx-auto">
@@ -91,7 +163,7 @@ const Cart = () => {
                   <div className="flex flex-wrap justify-between items-center gap-4 mt-6">
                     {/* Quantity */}
                     <div className="flex items-center border rounded-lg overflow-hidden">
-                      <button className="px-4 py-2 hover:bg-gray-100">
+                      <button onClick={()=>handleRemoveFromCart(item.product._id)} className="px-4 py-2 hover:bg-gray-100">
                         <FiMinus />
                       </button>
 
@@ -99,7 +171,7 @@ const Cart = () => {
                         {item.quantity}
                       </span>
 
-                      <button className="px-4 py-2 hover:bg-gray-100">
+                      <button onClick={()=>handleAddToCart(item.product._id)} className="px-4 py-2 hover:bg-gray-100">
                         <FiPlus />
                       </button>
                     </div>
@@ -111,7 +183,7 @@ const Cart = () => {
                     </div>
 
                     {/* Remove */}
-                    <button className="flex items-center gap-2 text-red-500 hover:text-red-700">
+                    <button onClick={()=>handleRemoveEntireItemFromCart(item.product._id)} className="flex items-center gap-2 text-red-500 hover:text-red-700">
                       <FiTrash2 size={18} />
                       Remove
                     </button>
@@ -135,7 +207,7 @@ const Cart = () => {
 
               <div className="flex justify-between">
                 <span>Subtotal</span>
-                <span>₹{subtotal.toLocaleString() }</span>
+                <span>₹{subtotal.toLocaleString()}</span>
               </div>
 
               <div className="flex justify-between">
@@ -159,7 +231,7 @@ const Cart = () => {
               </div>
             </div>
 
-            <button onClick={()=>navigate("/checkout")} className="w-full mt-8 bg-[#640d14] text-white py-4 rounded-xl font-semibold hover:bg-[#4b0910] transition">
+            <button onClick={() => navigate("/checkout")} className="w-full mt-8 bg-[#640d14] text-white py-4 rounded-xl font-semibold hover:bg-[#4b0910] transition">
               Proceed to Checkout
             </button>
 

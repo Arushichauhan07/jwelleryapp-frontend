@@ -60,7 +60,7 @@ const Products = () => {
   let filteredProducts =
     selectedCategory === "All"
       ? products
-      : products.filter((p) => p.category === selectedCategory);
+      : products?.filter((p) => p.category === selectedCategory);
 
   if (searchField) {
     filteredProducts = filteredProducts.filter((product) =>
