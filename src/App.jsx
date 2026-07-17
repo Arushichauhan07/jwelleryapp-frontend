@@ -22,6 +22,7 @@ import Wishlist from './pages/Wishlist.jsx';
 import Cart from './pages/Cart.jsx';
 import { Toaster } from 'react-hot-toast';
 import CheckoutPage from './pages/CheckoutPage.jsx';
+import HelpSupport from './pages/HelpSupport.jsx';
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
         <Route path="wishlist" element={<Wishlist />} />
         <Route path="cart" element={<Cart />} />
         <Route path="checkout" element={<CheckoutPage/>} />
+        <Route path="helpandsupport" element={<HelpSupport/>} />
       </Route>
 
         <Route path="admin" element={<AdminDashboard />}>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useActionState } from "react";
 import {
     FiMapPin,
     FiEdit2,
@@ -9,35 +9,31 @@ import {
 } from "react-icons/fi";
 import { Dialog } from 'primereact/dialog';
 import axios from "axios";
+import { useUser } from "../dataProvider/useUser";
 
 const apiUrl = import.meta.env.VITE_API_URL;
+
 
 const CheckoutPage = () => {
     const [selectedPayment, setSelectedPayment] = useState("razorpay");
     const [openUpiOptions, setOpenUpiOptions] = useState(false);
+    const [editDetails, setEditDetails] = useState(false);
+    const [userDetails, setUserDetails] = useState({
+        name: "",
+        phoneNo: "",
+        address: ""
+    })
     const [upiApp, setUpiApp] = useState("");
+    const { data: userData, isLoading, error, refetch } = useUser();
 
-    const products = [
-        {
-            id: 1,
-            name: "Gold Plated Necklace",
-            image:
-                "https://images.unsplash.com/photo-1617038220319-276d3cfab638?w=500",
-            price: 1999,
-            quantity: 1,
-        },
-        {
-            id: 2,
-            name: "Elegant Earrings",
-            image:
-                "https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=500",
-            price: 999,
-            quantity: 2,
-        },
-    ];
+    console.log("userData", userData)
 
-    const subtotal = products.reduce(
-        (acc, item) => acc + item.price * item.quantity,
+    const products = userData?.cart
+
+    console.log("products", products)
+
+    const subtotal = products?.reduce(
+        (acc, item) => acc + item.product.price * item.quantity,
         0
     );
 
@@ -45,14 +41,17 @@ const CheckoutPage = () => {
     const total = subtotal + shipping;
 
     const handlePayment = async () => {
+        try {
+            const response = await axios.post(`${apiUrl}/payment/create`, {
+                amount: total,
+                paymentMethod: "upi",
+                app: upiApp
+            });
 
-        const response = await axios.post(`${apiUrl}/payment/create`, {
-            amount: total,
-            paymentMethod: "upi",
-            app: upiApp
-        });
-
-        window.location.href = response.data.redirectUrl;
+            window.location.href = response.data.redirectUrl;
+        } catch (error) {
+            console.log("error", error)
+        }
     };
 
     const handlePaymentViaCard = async () => {
@@ -69,7 +68,7 @@ const CheckoutPage = () => {
 
             currency: response.data.currency,
 
-            name: "Arushi Jewellery",
+            name: "Aarna Jewels",
 
             description: "Jewellery Purchase",
 
@@ -88,6 +87,64 @@ const CheckoutPage = () => {
         razor.open();
     };
 
+    const token = localStorage.getItem("token")
+
+    const updateUserDetails = async (prevState, formData) => {
+        const address = formData.get("address")?.trim();
+        const phone = formData.get("phone")?.trim();
+
+        if (!/^\d{10}$/.test(phone)) {
+            return {
+                success: false,
+                message: "Phone number must be exactly 10 digits.",
+            };
+        }
+
+        if (!address || !phone) {
+            return {
+                success: false,
+                message: "Address and phone number are required.",
+            };
+        }
+
+        try {
+            const response = await axios.patch(
+                `${apiUrl}/editUser`,
+                {
+                    address,
+                    phone,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            setEditDetails(false);
+            refetch()
+
+            return {
+                success: true,
+                message:
+                    response?.data?.message || "Profile updated successfully!",
+            };
+        } catch (error) {
+            console.log("error", error)
+            return {
+                success: false,
+                message:
+                    error?.response?.data?.message ||
+                    "Something went wrong.",
+            };
+        }
+    };
+
+    const [state, formAction, isPending] = useActionState(updateUserDetails, {
+        success: false,
+        message: "",
+    });
+
     return (
         <div className="bg-gray-100 min-h-screen py-10 rounded-2xl">
             <div className="max-w-7xl mx-auto px-5">
@@ -104,30 +161,113 @@ const CheckoutPage = () => {
                                 </h2>
 
                                 <div className="flex gap-3">
-                                    <button className="flex items-center gap-2 px-4 py-2 rounded-lg border hover:bg-gray-100 transition">
-                                        <FiPlus />
-                                        Add Address
+                                    <button onClick={() => setEditDetails(true)} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#640d14] hover:bg-[#52091b] text-white transition">
+                                        <FiEdit2 />
+                                        Edit Details
                                     </button>
 
-                                    <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-black text-white hover:bg-gray-800 transition">
-                                        <FiEdit2 />
-                                        Edit
-                                    </button>
+                                    <Dialog
+                                        header="Edit User Details"
+                                        visible={editDetails}
+                                        onHide={() => setEditDetails(false)}
+                                        style={{
+                                            width: "420px",
+                                            backgroundColor: "#F9F6EE",
+                                            padding: "1.5rem",
+                                            borderRadius: "16px",
+                                        }}
+
+                                    >
+                                        <form action={formAction} className="space-y-5 mt-2">
+                                            <div>
+                                                <label className="block text-sm font-medium mb-2">
+                                                    Address
+                                                </label>
+
+                                                <textarea
+                                                    name="address"
+                                                    defaultValue={userData?.address || ""}
+                                                    rows={4}
+                                                    className="w-full rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-[#6D0F24]"
+                                                    placeholder="Enter your address"
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-sm font-medium mb-2">
+                                                    Phone Number
+                                                </label>
+
+                                                <input
+                                                    type="tel"
+                                                    name="phone"
+                                                    defaultValue={userData?.phone || ""}
+                                                    placeholder="Enter phone number"
+                                                    maxLength={10}
+                                                    pattern="[0-9]{10}"
+                                                    inputMode="numeric"
+                                                    className="w-full rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                                                    onInput={(e) => {
+                                                        e.target.value = e.target.value.replace(/\D/g, "").slice(0, 10);
+                                                    }}
+                                                />
+                                            </div>
+
+                                            {state.message && (
+                                                <p
+                                                    className={`text-sm ${state.success ? "text-green-600" : "text-red-600"
+                                                        }`}
+                                                >
+                                                    {state.message}
+                                                </p>
+                                            )}
+
+                                            <div className="flex justify-end gap-3 pt-2">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setEditDetails(false)}
+                                                    className="rounded-lg border border-gray-300 px-5 py-2 hover:bg-gray-100"
+                                                >
+                                                    Cancel
+                                                </button>
+
+                                                <button
+                                                    type="submit"
+                                                    disabled={isPending}
+                                                    className="rounded-lg bg-[#6D0F24] hover:bg-[#4b0910] px-5 py-2 text-white disabled:opacity-60"
+                                                >
+                                                    {isPending ? "Saving..." : "Save Changes"}
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </Dialog>
                                 </div>
                             </div>
 
                             <div className="border rounded-xl p-5">
-                                <p className="font-semibold text-lg">Arushi Chauhan</p>
-
-                                <p className="text-gray-600 mt-2">
-                                    123, Shanti Nagar,
-                                    <br />
-                                    Jaipur, Rajasthan - 302020
+                                <p className="font-semibold text-lg">
+                                    {userData?.name || "Customer"}
                                 </p>
 
-                                <p className="mt-2 text-gray-600">
-                                    Phone : +91 9876543210
-                                </p>
+                                <div className="mt-2">
+                                    {userData?.address ? (
+                                        <p className="text-gray-600">{userData.address}</p>
+                                    ) : (
+                                        <p className="text-sm italic text-gray-400">
+                                            No address added yet.
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div className="mt-2">
+                                    {userData?.phone ? (
+                                        <p className="text-gray-600">{userData.phone}</p>
+                                    ) : (
+                                        <p className="text-sm italic text-gray-400">
+                                            No phone number added yet.
+                                        </p>
+                                    )}
+                                </div>
                             </div>
                         </div>
 
@@ -143,7 +283,7 @@ const CheckoutPage = () => {
                                         ? "border-black bg-gray-50"
                                         : ""
                                         }`}
-                                    onClick={()=>handlePaymentViaCard()}
+                                    onClick={() => handlePaymentViaCard()}
                                 >
                                     <div className="flex items-center gap-4">
                                         <FiCreditCard size={22} />
@@ -304,20 +444,20 @@ const CheckoutPage = () => {
                             </h2>
 
                             <div className="space-y-6">
-                                {products.map((product) => (
+                                {products?.map((product) => (
                                     <div
-                                        key={product.id}
+                                        key={product.product.id}
                                         className="flex gap-5 border-b pb-5 last:border-none"
                                     >
                                         <img
-                                            src={product.image}
-                                            alt={product.name}
+                                            src={product.product.images[0]}
+                                            alt={product.product.name}
                                             className="w-28 h-28 rounded-xl object-cover"
                                         />
 
                                         <div className="flex-1">
                                             <h3 className="font-semibold text-lg">
-                                                {product.name}
+                                                {product.product.name}
                                             </h3>
 
                                             <p className="text-gray-500 mt-2">
@@ -325,7 +465,7 @@ const CheckoutPage = () => {
                                             </p>
 
                                             <p className="font-bold text-xl mt-3">
-                                                ₹{product.price}
+                                                ₹{product.product.price}
                                             </p>
                                         </div>
                                     </div>
@@ -369,9 +509,9 @@ const CheckoutPage = () => {
                                     : "Proceed to Payment"}
                             </button>
 
-                            <div className="mt-5 text-sm text-gray-500 text-center">
+                            {/* <div className="mt-5 text-sm text-gray-500 text-center">
                                 Secure Checkout powered by Razorpay
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                 </div>

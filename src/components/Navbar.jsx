@@ -9,7 +9,7 @@ import UserProfile from "./UserProfile";
 import { useUser } from "../dataProvider/useUser.js";
 import { useSearch } from "../context/UtilisStates.jsx";
 
-const Navbar = () => {
+const Navbar = ({showPopup,setShowPopup}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [showSearchbar, setShowSearchbar] = useState(false)
@@ -19,6 +19,8 @@ const Navbar = () => {
   const location = useLocation()
   const { searchField, setSearchField } = useSearch()
 
+  const token = localStorage.getItem("token")
+
   useEffect(() => {
     if (location.pathname === "/products") {
       setShowSearchbar(true);
@@ -26,6 +28,14 @@ const Navbar = () => {
       setShowSearchbar(false);
     }
   }, [location.pathname]);
+
+  const handleLoginAndProfile = () => {
+    if(token){
+      setShowProfile(true)
+    }else{
+      setShowPopup(true)
+    }
+  }
 
   return (
     <div className="w-full bg-[#640d14] shadow-lg">
@@ -76,7 +86,7 @@ const Navbar = () => {
           <CgProfile
             size={24}
             className="cursor-pointer flex-shrink-0"
-            onClick={() => setShowProfile(true)}
+            onClick={handleLoginAndProfile}
           />
 
           <UserProfile

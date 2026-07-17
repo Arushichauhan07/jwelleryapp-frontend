@@ -43,8 +43,30 @@ const Wishlist = () => {
     }
   };
 
+    const handleWishlistMoveToCart = async () => {
+    try {
+      const response = await axios.get(
+        `${apiUrl}/wishlistmovecart`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log("response", response)
+
+      if (response.data.success) {
+        toast.success("Product added to cart")
+        refetch()
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+
   return (
-    <section className="min-h-screen bg-[#FFF8EF] py-12 px-6 rounded-2xl">
+    <section className="min-h-screen bg-[#FFF8EF]/50 py-12 px-6 rounded-2xl">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
 
@@ -52,13 +74,17 @@ const Wishlist = () => {
           <div>
 
             <p className="text-gray-600 mt-3">
-              {wishlistProducts.length} Items Saved
+              {wishlistProducts.length} {wishlistProducts.length > 1 ? <span>Items</span> : <span>Item</span>}
             </p>
           </div>
 
-          <button className="mt-5 md:mt-0 bg-[#D4AF37] hover:bg-yellow-500 transition px-6 py-3 rounded-lg font-semibold text-[#6D0F24] shadow">
-            Move All To Cart
-          </button>
+          {
+            wishlistProducts.length > 0 && (
+              <button onClick={handleWishlistMoveToCart} className="mt-5 md:mt-0 bg-[#6D0F24] hover:bg-[#52091b] transition px-6 py-3 rounded-lg font-semibold cursor-pointer text-white shadow">
+                Move All To Cart
+              </button>
+            )
+          }
         </div>
 
         {/* Empty State */}
@@ -68,10 +94,10 @@ const Wishlist = () => {
 
             <FaHeart
               size={70}
-              className="mx-auto text-[#D4AF37]"
+              className="mx-auto text-[#6D0F24]"
             />
 
-            <h2 className="text-3xl font-bold mt-6 text-[#6D0F24]">
+            <h2 className="text-3xl font-bold mt-6 text-[#D4AF37]">
               Wishlist is Empty
             </h2>
 

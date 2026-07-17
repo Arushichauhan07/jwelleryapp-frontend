@@ -3,19 +3,22 @@ import {
     FiX,
     FiUser,
     FiSettings,
-    FiBell,
     FiHelpCircle,
     FiLogOut,
     FiChevronRight,
 } from "react-icons/fi";
 import axios from "axios";
 import { useUser } from "../dataProvider/useUser.js";
+import { IoPersonSharp } from "react-icons/io5";
+import { MdHistory } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function UserProfile({ open, onClose }) {
     // const [userData, setUserData] = useState(null);
     const { data: userData, isLoading, error } = useUser();
+    const navigate = useNavigate()
 
     if (isLoading) return <p>Loading...</p>;
 
@@ -70,14 +73,12 @@ export default function UserProfile({ open, onClose }) {
                 {/* Header */}
                 <div className="flex items-center justify-between px-7 py-6 border-b border-gray-200">
                     <div className="flex items-center gap-4">
-                        <img
-                            src="https://i.pravatar.cc/120"
-                            alt=""
-                            className="w-14 h-14 rounded-full object-cover"
-                        />
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-gray-500 text-gray-800">
+                            <IoPersonSharp className="text-xl" />
+                        </div>
 
                         <div>
-                            <h2 className="font-semibold text-lg text-gray-800">
+                            <h2 className="text-lg font-semibold text-gray-800">
                                 {userData?.name}
                             </h2>
                         </div>
@@ -109,7 +110,7 @@ export default function UserProfile({ open, onClose }) {
                                 </p>
 
                                 <h3 className="text-xl font-semibold text-[#6A2E40]">
-                                    18
+                                    {userData?.orders?.length || 0}
                                 </h3>
                             </div>
 
@@ -129,18 +130,18 @@ export default function UserProfile({ open, onClose }) {
                 {/* Menu */}
                 <div className="px-4 space-y-1">
                     {[
-                        { title: "Profile", icon: <FiUser /> },
+                        { title: "Orders", icon: <MdHistory /> },
                         { title: "Settings", icon: <FiSettings /> },
-                        { title: "Notifications", icon: <FiBell /> },
-                        { title: "Help & Support", icon: <FiHelpCircle /> },
+                        { title: "Help & Support", icon: <FiHelpCircle />, onClick: "/helpandsupport" },
                     ].map((item) => (
                         <button
                             key={item.title}
+                            onClick={()=>navigate(item.onClick)}
                             className="flex w-full items-center justify-between rounded-xl px-4 py-3
-        text-gray-700
-        hover:bg-[#FFF8E6]
-        hover:text-[#6A2E40]
-        transition"
+                            text-gray-700
+                            hover:bg-[#FFF8E6]
+                            hover:text-[#6A2E40]
+                            transition"
                         >
                             <div className="flex items-center gap-3">
                                 <span className="text-gray-500">
@@ -162,14 +163,14 @@ export default function UserProfile({ open, onClose }) {
                 <div className="absolute bottom-0 left-0 right-0 border-t border-gray-200 p-5">
                     <button onClick={() => handleLogout()}
                         className="flex w-full items-center justify-center gap-2
-      rounded-xl
-      border border-gray-300
-      py-3
-      text-gray-700
-      hover:bg-red-50
-      hover:border-red-200
-      hover:text-red-600
-      transition"
+                        rounded-xl
+                        border border-gray-300
+                        py-3
+                        text-gray-700
+                        hover:bg-red-50
+                        hover:border-red-200
+                        hover:text-red-600
+                        transition"
                     >
                         <FiLogOut />
                         Logout

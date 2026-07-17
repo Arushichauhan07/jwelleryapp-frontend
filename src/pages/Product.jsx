@@ -231,7 +231,7 @@ const Product = () => {
             </p>
 
             {/* Quantity Selector */}
-            <div className="flex items-center gap-4 mt-4">
+            {/* <div className="flex items-center gap-4 mt-4">
               <span className="font-semibold">Quantity:</span>
               <input
                 type="number"
@@ -240,7 +240,7 @@ const Product = () => {
                 onChange={(e) => setQuantity(Number(e.target.value))}
                 className="w-20 px-3 py-2 border rounded-md focus:outline-none"
               />
-            </div>
+            </div> */}
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 mt-6 w-full">

@@ -12,7 +12,7 @@ const Layout = () => {
     return (
         <div >
             <Slider />
-            <Navbar />
+            <Navbar showPopup={showPopup} setShowPopup={setShowPopup}/>
             <Login showPopup={showPopup} setShowPopup={setShowPopup} />
 
             <ProductDisplay />

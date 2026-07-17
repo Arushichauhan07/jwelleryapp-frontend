@@ -8,19 +8,19 @@ import axios from "axios";
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const Login = ({ showPopup, setShowPopup }) => {
-    const [isLogin, setIsLogin] = useState(true);
-    useEffect(() => {
-        if (localStorage.getItem("token")) {
-            setShowPopup(false);
-            return;
-        }
+    const [isLogin, setIsLogin] = useState(false);
+    // useEffect(() => {
+    //     if (localStorage.getItem("token")) {
+    //         setShowPopup(false);
+    //         return;
+    //     }
 
-        const timer = setTimeout(() => {
-            setShowPopup(true);
-        }, 1000); // 1 minute
+    //     const timer = setTimeout(() => {
+    //         setShowPopup(true);
+    //     }, 1000); // 1 minute
 
-        return () => clearTimeout(timer);
-    }, []);
+    //     return () => clearTimeout(timer);
+    // }, []);
 
     const authAction = async (prevState, formData) => {
         const data = {
@@ -82,6 +82,12 @@ const Login = ({ showPopup, setShowPopup }) => {
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-5">
             <div className="relative w-full max-w-md rounded-3xl bg-white p-8 shadow-2xl animate-[fadeIn_.4s_ease]">
+                <button
+                    onClick={()=>setShowPopup(false)}
+                    className="absolute right-5 top-5 rounded-full p-2 text-gray-500 transition hover:bg-gray-100 hover:text-black"
+                >
+                    <RxCross2 className="text-xl" />
+                </button>
 
                 <h2 className="text-3xl font-bold text-center text-[#8C1007]">
                     {isLogin ? "Welcome Back" : "Create Account"}
