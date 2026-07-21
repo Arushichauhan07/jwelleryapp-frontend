@@ -36,26 +36,26 @@ const Cart = () => {
     );
   }
 
-  // if (!userData?.cart?.length) {
-  //   return (
-  //     <div className="min-h-screen flex flex-col items-center justify-center">
-  //       <div className="bg-white rounded-2xl p-16 shadow text-center">
-  //       <h2 className="text-3xl font-bold">Your Cart is Empty</h2>
+  if (!userData?.cart?.length) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center">
+        <div className="bg-white rounded-2xl p-16 shadow text-center">
+        <h2 className="text-3xl font-bold">Your Cart is Empty</h2>
 
-  //       <p className="mt-3 text-gray-500">
-  //         Looks like you haven't added anything yet.
-  //       </p>
+        <p className="mt-3 text-gray-500">
+          Looks like you haven't added anything yet.
+        </p>
 
-  //       <button
-  //         onClick={() => navigate("/products")}
-  //         className="mt-6 bg-[#640d14] text-white px-6 py-3 rounded-lg hover:bg-[#4e0a10]"
-  //       >
-  //         Continue Shopping
-  //       </button>
-  //       </div>
-  //     </div>
-  //   );
-  // }
+        <button
+          onClick={() => navigate("/products")}
+          className="mt-6 bg-[#640d14] text-white px-6 py-3 rounded-lg hover:bg-[#4e0a10]"
+        >
+          Continue Shopping
+        </button>
+        </div>
+      </div>
+    );
+  }
 
   const token = localStorage.getItem("token")
 
@@ -145,7 +145,7 @@ const Cart = () => {
           <div className="grid lg:grid-cols-3 gap-8">
             {/* Cart Items */}
             <div className="lg:col-span-2 space-y-6">
-              {userData.cart.map((item) => (
+              {userData?.cart?.map((item) => (
                 <div
                   key={item._id}
                   className="bg-white rounded-2xl shadow-md p-5 flex flex-col sm:flex-row gap-5"
@@ -252,7 +252,7 @@ const Cart = () => {
 
               <button
                 onClick={() => navigate("/products")}
-                className="w-full mt-4 border border-[#640d14] text-white py-4 rounded-xl font-semibold hover:bg-[#4b0910] hover:text-white transition"
+                className="w-full mt-4 border border-[#640d14] text-black py-4 rounded-xl font-semibold hover:bg-[#4b0910] hover:text-white transition"
               >
                 Continue Shopping
               </button>

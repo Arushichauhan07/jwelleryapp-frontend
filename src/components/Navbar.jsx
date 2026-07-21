@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { NavLink, Link, useNavigate, useLocation } from "react-router-dom";
 import { CgProfile } from "react-icons/cg";
 import { IoMdSearch } from "react-icons/io";
 import { IoHeartOutline } from "react-icons/io5";
@@ -9,7 +9,7 @@ import UserProfile from "./UserProfile";
 import { useUser } from "../dataProvider/useUser.js";
 import { useSearch } from "../context/UtilisStates.jsx";
 
-const Navbar = ({showPopup,setShowPopup}) => {
+const Navbar = ({ showPopup, setShowPopup }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [showSearchbar, setShowSearchbar] = useState(false)
@@ -30,12 +30,19 @@ const Navbar = ({showPopup,setShowPopup}) => {
   }, [location.pathname]);
 
   const handleLoginAndProfile = () => {
-    if(token){
+    if (token) {
       setShowProfile(true)
-    }else{
+    } else {
       setShowPopup(true)
     }
   }
+
+  const navItems = [
+    { name: "Home", path: "/" },
+    { name: "Jewellery", path: "/products" },
+    { name: "What's New?", path: "/new-collection" },
+    { name: "Our Story", path: "/our-story" },
+  ];
 
   return (
     <div className="w-full bg-[#640d14] shadow-lg">
@@ -58,13 +65,20 @@ const Navbar = ({showPopup,setShowPopup}) => {
 
 
           <div className="hidden md:flex gap-6 font-semibold text-white tracking-wide">
-            <Link to="/" className="hover:text-yellow-200">Home</Link>
-            <Link to="/products" className="hover:text-yellow-200">Jewellery</Link>
-            <Link to="/new-collection" className="hover:text-yellow-200">What's New?</Link>
-            {/* <Link to="/products" className="hover:text-yellow-200">Type</Link> */}
-            {/* <Link to="/products" className="hover:text-yellow-200">Category</Link> */}
-            {/* <Link to="/login" className="hover:text-yellow-200">Login</Link> */}
-            <Link to="/our-story" className="hover:text-yellow-200">Our Story</Link>
+            {navItems.map((item) => (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                className={({ isActive }) =>
+                  `transition-colors duration-200 ${isActive
+                    ? "text-yellow-200"
+                    : "hover:text-yellow-200"
+                  }`
+                }
+              >
+                {item.name}
+              </NavLink>
+            ))}
           </div>
         </div>
 
@@ -76,7 +90,7 @@ const Navbar = ({showPopup,setShowPopup}) => {
               <input
                 type="text"
                 value={searchField}
-                onChange={(e)=> setSearchField(e.target.value)}
+                onChange={(e) => setSearchField(e.target.value)}
                 placeholder="Search products..."
                 className="w-full rounded-lg border-[0.5px] bg-[#640d14] border-gray-100 px-4 py-2 text-sm text-white outline-none transition focus:border-gray-200 focus:ring-1 focus:ring-gray-200"
               />

@@ -5,16 +5,18 @@ import {
     FiPlus,
     FiCreditCard,
     FiSmartphone,
-    FiDollarSign,
 } from "react-icons/fi";
+import { TbCurrencyRupee } from "react-icons/tb";
 import { Dialog } from 'primereact/dialog';
 import axios from "axios";
 import { useUser } from "../dataProvider/useUser";
+import { useNavigate } from "react-router-dom";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 
 const CheckoutPage = () => {
+    const navigate = useNavigate()
     const [selectedPayment, setSelectedPayment] = useState("razorpay");
     const [openUpiOptions, setOpenUpiOptions] = useState(false);
     const [editDetails, setEditDetails] = useState(false);
@@ -144,6 +146,41 @@ const CheckoutPage = () => {
         success: false,
         message: "",
     });
+
+    const generateOrderId = () => {
+        const randomNumber = Math.floor(100000 + Math.random() * 900000);
+
+        return `ORD-${Date.now()}-${randomNumber}`;
+    };
+
+    const formatDate = (date) =>
+        date?.toLocaleDateString("en-IN", {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+        });
+
+    const handleOrderPlaced = async () => {
+        const orderDate = new Date()
+        const estimatedDelivery = new Date(orderDate);
+        estimatedDelivery.setDate(estimatedDelivery.getDate() + 5);
+        if (selectedPayment === "cod") {
+            navigate("/ordersuccess", {
+                state: {
+                    order: {
+                        orderId: generateOrderId(),
+                        orderDate: formatDate(orderDate),
+                        estimatedDelivery: formatDate(estimatedDelivery),
+                        paymentMethod: "Cash on Delivery",
+                        totalAmount: total,
+                        address: userData.address,
+                        phone: userData.phone,
+                        items: products
+                    }
+                }
+            })
+        }
+    }
 
     return (
         <div className="bg-gray-100 min-h-screen py-10 rounded-2xl">
@@ -415,7 +452,7 @@ const CheckoutPage = () => {
                                         }`}
                                 >
                                     <div className="flex items-center gap-4">
-                                        <FiDollarSign size={22} />
+                                        <TbCurrencyRupee size={22}/>
 
                                         <div>
                                             <h3 className="font-semibold">
@@ -503,7 +540,7 @@ const CheckoutPage = () => {
                                 </div>
                             </div>
 
-                            <button className="w-full mt-8 bg-[#640d14] text-white py-4 rounded-xl font-semibold hover:bg-[#4b0910] transition">
+                            <button onClick={handleOrderPlaced} className="w-full mt-8 bg-[#640d14] text-white py-4 rounded-xl font-semibold hover:bg-[#4b0910] transition">
                                 {selectedPayment === "cod"
                                     ? "Place Order"
                                     : "Proceed to Payment"}

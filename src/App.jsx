@@ -6,7 +6,15 @@ import Home from './pages/Home.jsx'
 import NewCollection from './pages/NewCollection.jsx';
 import SignupDialog from './components/SignUpDialog.jsx'
 import Products from './pages/Products.jsx'
-import Product from './pages/Product.jsx'
+import Product from './pages/Product.jsx';
+import OurStory from './pages/OurStory.jsx';
+import Wishlist from './pages/Wishlist.jsx';
+import Cart from './pages/Cart.jsx';
+import { Toaster } from 'react-hot-toast';
+import CheckoutPage from './pages/CheckoutPage.jsx';
+import HelpSupport from './pages/HelpSupport.jsx';
+import OrderSuccess from './pages/OrderSuccess.jsx';
+import ProtectedRoute from './routes/ProtectedRoutes.jsx';
 
 // *****************************************ADMIN************************************************** 
 import AdminDashboard from './admin/AdminDashboard.jsx'
@@ -17,33 +25,41 @@ import Settings from './admin/pages/Settings.jsx';
 import ProductsAdmin from './admin/pages/ProductsAdmin.jsx';
 import Login from './pages/Login.jsx';
 import Practice from './pages/Practice.jsx';
-import OurStory from './pages/OurStory.jsx';
-import Wishlist from './pages/Wishlist.jsx';
-import Cart from './pages/Cart.jsx';
-import { Toaster } from 'react-hot-toast';
-import CheckoutPage from './pages/CheckoutPage.jsx';
-import HelpSupport from './pages/HelpSupport.jsx';
+
 
 function App() {
+
+  const isLoggedIn = Boolean(localStorage.getItem("token"));
+
   return (
     <>
-    <Toaster
+      <Toaster
         position="top-right"
         reverseOrder={false}
       />
-    <Routes>
-      <Route path="/" element={<Layout />}>
-        <Route index element={<Home />} />
-        <Route path="products" element={<Products />} />
-        <Route path="new-collection" element={<NewCollection />} />
-        <Route path="product/:id" element={<Product />} />
-        {/* <Route path="login" element={<Login />} /> */}
-        <Route path="our-story" element={<OurStory />} />
-        <Route path="wishlist" element={<Wishlist />} />
-        <Route path="cart" element={<Cart />} />
-        <Route path="checkout" element={<CheckoutPage/>} />
-        <Route path="helpandsupport" element={<HelpSupport/>} />
-      </Route>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Home />} />
+
+          <Route path="products" element={<Products />} />
+          <Route path="new-collection" element={<NewCollection />} />
+          <Route path="product/:id" element={<Product />} />
+          <Route path="our-story" element={<OurStory />} />
+          <Route path="helpandsupport" element={<HelpSupport />} />
+
+          {/* Protected Routes */}
+          <Route element={<ProtectedRoute isLoggedIn={isLoggedIn} />}>
+
+            <Route path="wishlist" element={<Wishlist />} />
+
+            <Route path="cart" element={<Cart />} />
+
+            <Route path="checkout" element={<CheckoutPage />} />
+
+            <Route path="ordersuccess" element={<OrderSuccess />} />
+
+          </Route>
+        </Route>
 
         <Route path="admin" element={<AdminDashboard />}>
           <Route index element={<AdminHome />} />
@@ -54,8 +70,8 @@ function App() {
         </Route>
 
         <Route path="practice" element={<Practice />} />
-    </Routes>
-    <SignupDialog/>
+      </Routes>
+      <SignupDialog />
     </>
   )
 }

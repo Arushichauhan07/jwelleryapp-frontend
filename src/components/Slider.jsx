@@ -3,13 +3,21 @@
 const Slider = () => {
 
     const marqueeItems = [
-        "✨ New Arrivals",
-        "💎 Handcrafted Jewellery",
-        "🚚 Free Shipping",
-        "🎁 Premium Gift Packaging",
-        "💍 Timeless Elegance",
-        "✨ Exclusive Collection",
+        "50% Off on First Order",
+        "Free Shipping",
+        "New Arrivals",
+        "Premium Gift Packaging",
+        "30% Off",
+        "Exclusive Collection",
     ];
+    // const marqueeItems = [
+    //     "✨ New Arrivals",
+    //     "💎 Handcrafted Jewellery",
+    //     "🚚 Free Shipping",
+    //     "🎁 Premium Gift Packaging",
+    //     "💍 Timeless Elegance",
+    //     "✨ Exclusive Collection",
+    // ];
 
     return (
         <div className="p-0 m-0 h-16 w-full overflow-hidden flex items-center text-[#250902]">
